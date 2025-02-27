@@ -25,17 +25,7 @@ jobs:
       - store_artifacts:
           path: build/reports
 
-  benchmark:
-    docker:
-      - image: cimg/openjdk:17.0
-    steps:
-      - checkout
-      - run:
-          name: Run Kotlin Benchmark
-          command: ./gradlew benchmark
-
 workflows:
   build-and-test:
     jobs:
       - test-java
-      - benchmark
