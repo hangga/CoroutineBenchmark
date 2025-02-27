@@ -16,6 +16,9 @@ jobs:
           key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
       - run:
           command: ./gradlew check
+      - run:
+          name: Run Kotlin Benchmark
+          command: ./gradlew benchmark
       - store_test_results:
           path: build/test-results
       - save_cache:
