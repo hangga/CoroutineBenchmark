@@ -14,25 +14,25 @@ import kotlin.system.measureTimeMillis
 @Measurement(iterations = 10, time = 1, timeUnit = TimeUnit.SECONDS)
 class CoroutineBenchmark {
 
-    private val transactionCount = 100  // Jumlah transaksi yang akan diuji
+    private val transactionCount = 100  // Number of transactions to be tested
     private val processedTransactions = AtomicInteger(0)
 
-    // Simulasi validasi transaksi (misalnya verifikasi saldo)
+    // Simulate transaction validation (e.g., balance verification)
     private suspend fun validateTransaction(transactionId: Int): Boolean {
-        delay(Random.nextLong(5, 20)) // Simulasi latensi validasi
-        return transactionId % 10 != 0  // Simulasi beberapa transaksi gagal (misalnya saldo kurang)
+        delay(Random.nextLong(5, 20)) // Simulate validation latency
+        return transactionId % 10 != 0  // Simulate some failed transactions (e.g., insufficient balance)
     }
 
-    // Simulasi pemrosesan transaksi
+    // Simulate transaction processing
     private suspend fun processTransaction(transactionId: Int) {
         if (validateTransaction(transactionId)) {
-            delay(Random.nextLong(10, 50)) // Simulasi waktu proses transaksi
+            delay(Random.nextLong(10, 50)) // Simulate transaction processing time
             processedTransactions.incrementAndGet()
         }
     }
 
     @Benchmark
-    fun benchmarkSequentialTransactions() = runBlocking {
+    fun sequentialTransactions() = runBlocking {
         val time = measureTimeMillis {
             for (id in 1..transactionCount) {
                 processTransaction(id)
@@ -42,22 +42,22 @@ class CoroutineBenchmark {
     }
 
     @Benchmark
-    fun benchmarkDefaultDispatchers() = runBlocking {
+    fun defaultDispatchersTransactions() = runBlocking {
         benchmarkDispatcher("Default", Dispatchers.Default)
     }
 
     @Benchmark
-    fun benchmarkIODispatchers() = runBlocking {
+    fun iODispatchersTransactions() = runBlocking {
         benchmarkDispatcher("IO", Dispatchers.IO)
     }
 
     @Benchmark
-    fun benchmarkUnconfinedDispatchers() = runBlocking {
+    fun unconfinedDispatchersTransactions() = runBlocking {
         benchmarkDispatcher("Unconfined", Dispatchers.Unconfined)
     }
 
     @Benchmark
-    fun benchmarkMainDispatchers() = runBlocking {
+    fun mainDispatchersTransactions() = runBlocking {
         benchmarkDispatcher("Main", Dispatchers.Main)
     }
 
