@@ -42,14 +42,33 @@ class CoroutineBenchmark {
     }
 
     @Benchmark
-    fun benchmarkConcurrentTransactions() = runBlocking {
+    fun benchmarkDefaultDispatchers() = runBlocking {
+        benchmarkDispatcher("Default", Dispatchers.Default)
+    }
+
+    @Benchmark
+    fun benchmarkIODispatchers() = runBlocking {
+        benchmarkDispatcher("IO", Dispatchers.IO)
+    }
+
+    @Benchmark
+    fun benchmarkUnconfinedDispatchers() = runBlocking {
+        benchmarkDispatcher("Unconfined", Dispatchers.Unconfined)
+    }
+
+    @Benchmark
+    fun benchmarkMainDispatchers() = runBlocking {
+        benchmarkDispatcher("Main", Dispatchers.Main)
+    }
+
+    private suspend fun benchmarkDispatcher(name: String, dispatcher: CoroutineDispatcher) {
         val time = measureTimeMillis {
             coroutineScope {
                 (1..transactionCount).map { id ->
-                    launch(Dispatchers.Default) { processTransaction(id) }
+                    launch(dispatcher) { processTransaction(id) }
                 }.joinAll()
             }
         }
-        println("Concurrent processing time: $time ms")
+        println("Concurrent processing time on $name: $time ms")
     }
 }
