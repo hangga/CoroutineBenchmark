@@ -16,9 +16,6 @@ jobs:
           key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
       - run:
           command: ./gradlew check
-      - run:
-          name: Run Kotlin Benchmark
-          command: ./gradlew benchmark
       - store_test_results:
           path: build/test-results
       - save_cache:
@@ -27,19 +24,18 @@ jobs:
             - ~/.gradle/caches
       - store_artifacts:
           path: build/reports
-  deploy:
-    # This is an example deploy job, not actually used by the workflow
+
+  benchmark:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/openjdk:17.0
     steps:
-      # Replace this with steps to deploy to users
+      - checkout
       - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+          name: Run Kotlin Benchmark
+          command: ./gradlew benchmark
+
 workflows:
   build-and-test:
     jobs:
       - test-java
-    # - deploy:
-    #     requires:
-    #       - test-java
+      - benchmark
