@@ -3,6 +3,7 @@ package id.web.hangga
 import kotlinx.benchmark.*
 import kotlinx.coroutines.*
 import org.openjdk.jmh.annotations.Fork
+import org.openjdk.jmh.annotations.Level
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
@@ -16,6 +17,14 @@ class CoroutineBenchmark {
 
     private val transactionCount = 100  // Number of transactions to be tested
     private val processedTransactions = AtomicInteger(0)
+    private lateinit var transactions: List<Int>
+
+
+    @Setup(Level.Iteration) // Menyiapkan transaksi sebelum setiap iterasi benchmark
+    fun setup() {
+        transactions = List(transactionCount) { it + 1 }
+        processedTransactions.set(0)
+    }
 
     // Simulate transaction validation (e.g., balance verification)
     private suspend fun validateTransaction(transactionId: Int): Boolean {
@@ -54,11 +63,6 @@ class CoroutineBenchmark {
     @Benchmark
     fun unconfinedDispatchersTransactions() = runBlocking {
         benchmarkDispatcher("Unconfined", Dispatchers.Unconfined)
-    }
-
-    @Benchmark
-    fun mainDispatchersTransactions() = runBlocking {
-        benchmarkDispatcher("Main", Dispatchers.Main)
     }
 
     private suspend fun benchmarkDispatcher(name: String, dispatcher: CoroutineDispatcher) {
