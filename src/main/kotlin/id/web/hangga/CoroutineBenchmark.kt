@@ -20,7 +20,7 @@ class CoroutineBenchmark {
     private lateinit var transactions: List<Int>
 
 
-    @Setup(Level.Iteration) // Menyiapkan transaksi sebelum setiap iterasi benchmark
+    @Setup(Level.Iteration) // Prepare transactions before each benchmark iteration
     fun setup() {
         transactions = List(transactionCount) { it + 1 }
         processedTransactions.set(0)
@@ -83,10 +83,10 @@ class CoroutineBenchmark {
 
     private suspend fun benchmarkDispatcherParallel() {
         val time = measureTimeMillis {
-            withContext(Dispatchers.Default) { // Menjalankan di thread pool yang sesuai dengan jumlah CPU core
+            withContext(Dispatchers.Default) { // Runs in a thread pool that matches the number of CPU cores.
                 (1..transactionCount).map { id ->
-                    async { processTransaction(id) } // Menggunakan async untuk menjalankan secara parallel
-                }.awaitAll() // Menunggu semua async selesai
+                    async { processTransaction(id) } // Uses async to run in parallel
+                }.awaitAll() // wait all async done
             }
         }
         println("Parallel processing time : $time ms")
