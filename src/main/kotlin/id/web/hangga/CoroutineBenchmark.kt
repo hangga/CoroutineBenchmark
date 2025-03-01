@@ -75,4 +75,20 @@ class CoroutineBenchmark {
         }
         println("Concurrent processing time on $name: $time ms")
     }
+
+    @Benchmark
+    fun parallelDispatchersTransactions() = runBlocking {
+        benchmarkDispatcherParallel("Unconfined")
+    }
+
+    private suspend fun benchmarkDispatcherParallel(name: String) {
+        val time = measureTimeMillis {
+            withContext(Dispatchers.Default) { // Menjalankan di thread pool yang sesuai dengan jumlah CPU core
+                (1..transactionCount).map { id ->
+                    async { processTransaction(id) } // Menggunakan async untuk menjalankan secara parallel
+                }.awaitAll() // Menunggu semua async selesai
+            }
+        }
+        println("Parallel processing time on $name: $time ms")
+    }
 }
